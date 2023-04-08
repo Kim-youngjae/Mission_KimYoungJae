@@ -68,7 +68,7 @@ public class LikeablePersonController {
         Long loginedId = rq.getMember().getInstaMember().getId();// 현재 로그인된 계정의 인스타 아이디
         Optional<LikeablePerson> likeablePerson = this.likeablePersonService.getLikeablePerson(id);
 
-        if (loginedId != likeablePerson.get().getFromInstaMember().getId()) {
+        if (!loginedId.equals(likeablePerson.get().getFromInstaMember().getId())) {
             return rq.historyBack("삭제 권한이 없습니다.");
         }
 
