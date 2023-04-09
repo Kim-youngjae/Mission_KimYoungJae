@@ -53,7 +53,8 @@ public class LikeablePersonController {
 
         // 인스타인증을 했는지 체크
         if (instaMember != null) {
-            List<LikeablePerson> likeablePeople = likeablePersonService.findByFromInstaMemberId(instaMember.getId());
+            // 해당 instaMember 가 좋아한다고 한 사람들의 목록
+            List<LikeablePerson> likeablePeople = instaMember.getFromLikeablePeople();
             model.addAttribute("likeablePeople", likeablePeople);
         }
 
@@ -61,21 +62,21 @@ public class LikeablePersonController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/delete/{id}")
+    @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") Long id) {
         // TODO: 삭제를 처리하기 전에 해당 항목에 대한 소유권이 본인(로그인한 사람)에게 있는지 체크해야 한다.
-        Long loginedId = rq.getMember().getInstaMember().getId();// 현재 로그인된 계정의 인스타 아이디
-        Optional<LikeablePerson> likeablePerson = this.likeablePersonService.getLikeablePerson(id);
+        LikeablePerson likeablePerson = likeablePersonService.getLikeablePerson(id).orElse(null); // likeablePerson 테이블에 삭제 가능한 행 정보가 있는지 조회
 
-        if (!loginedId.equals(likeablePerson.get().getFromInstaMember().getId())) {
-            return rq.historyBack("삭제 권한이 없습니다.");
+        RsData canActorDeleteRsData = likeablePersonService.canActorDelete(rq.getMember(), likeablePerson); // 삭제가 가능한지 서비스로 요청 없으면 null값이 들어감
+
+        if (canActorDeleteRsData.isFail()) return rq.historyBack(canActorDeleteRsData); // 서비스에서의 삭제 판단 메서드 반환값이 isFail()이면 뒤로 돌아감
+
+        RsData deleteRsData = likeablePersonService.delete(likeablePerson); // 가능해서 삭제가능 하면 서비스에 삭제 요청
+
+        if (deleteRsData.isFail()) {
+            return rq.historyBack(deleteRsData); // id가 없어서 삭제가 실패할 경우 뒤로 원복
         }
 
-        LikeablePerson person = likeablePerson.get();
-
-        this.likeablePersonService.delete(person);
-        RsData deletedRsData = likeablePersonService.delete(person);
-
-        return rq.redirectWithMsg("/likeablePerson/list", deletedRsData);
+        return rq.redirectWithMsg("/likeablePerson/list", deleteRsData); // 모든 과정이 성공적으로 이루어지면 redirect
     }
 }
