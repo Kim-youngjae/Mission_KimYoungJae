@@ -9,12 +9,10 @@ import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -62,8 +60,9 @@ public class LikeablePersonController {
         return "usr/likeablePerson/list";
     }
 
-    @GetMapping("/delete/{id}")
-    public String deleteLikeablePerson(@PathVariable("id") Long id) {
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/delete/{id}")
+    public String delete(@PathVariable("id") Long id) {
         // TODO: 삭제를 처리하기 전에 해당 항목에 대한 소유권이 본인(로그인한 사람)에게 있는지 체크해야 한다.
         Long loginedId = rq.getMember().getInstaMember().getId();// 현재 로그인된 계정의 인스타 아이디
         Optional<LikeablePerson> likeablePerson = this.likeablePersonService.getLikeablePerson(id);
