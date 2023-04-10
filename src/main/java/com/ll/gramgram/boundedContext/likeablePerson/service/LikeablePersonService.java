@@ -31,6 +31,10 @@ public class LikeablePersonService {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
         }
 
+        // 동일한 인스타아이디, 동일한 호감코드로 등록하려고 하면 등록거부
+        RsData addRs = canAdd(member, username, attractiveTypeCode);
+        if (addRs != null) return addRs;
+
         InstaMember fromInstaMember = member.getInstaMember();
         InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
 
@@ -51,6 +55,19 @@ public class LikeablePersonService {
         toInstaMember.addToLikeablePerson(likeablePerson);
 
         return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeablePerson);
+    }
+
+    private static RsData canAdd(Member member, String username, int attractiveTypeCode) {
+        List<LikeablePerson> fromLikeablePeople = member.getInstaMember().getFromLikeablePeople();
+
+        for (LikeablePerson likeablePerson : fromLikeablePeople) {
+            if (likeablePerson.getToInstaMemberUsername().equals(username)) {
+                if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
+                    return RsData.of("F-3", "이미 호감상대가 등록되어 있습니다 <br> (동일한 호감코드)");
+                }
+            }
+        }
+        return null; // 우선 null을 반환
     }
 
     public List<LikeablePerson> findByFromInstaMemberId(Long fromInstaMemberId) {
