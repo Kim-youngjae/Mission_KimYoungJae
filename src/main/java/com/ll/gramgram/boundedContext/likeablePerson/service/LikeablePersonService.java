@@ -23,7 +23,7 @@ public class LikeablePersonService {
 
     @Transactional
     public RsData<LikeablePerson> like(Member member, String username, int attractiveTypeCode) {
-        if ( member.hasConnectedInstaMember() == false ) {
+        if (member.hasConnectedInstaMember() == false) {
             return RsData.of("F-2", "먼저 본인의 인스타그램 아이디를 입력해야 합니다.");
         }
 
@@ -63,10 +63,15 @@ public class LikeablePersonService {
         for (LikeablePerson likeablePerson : fromLikeablePeople) {
             if (likeablePerson.getToInstaMemberUsername().equals(username)) {
                 if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
-                    return RsData.of("F-3", "이미 호감상대가 등록되어 있습니다 <br> (동일한 호감코드)");
+                    return RsData.of("F-3", "이미 호감상대가 등록되어 있습니다 <br>(동일한 호감코드)");
                 }
             }
         }
+
+        if (fromLikeablePeople.size() == 10) {
+            return RsData.of("F-4", "더 이상 등록이 되지 않습니다. <br>목록에서 제거 후 등록해주세요");
+        }
+
         return null; // 우선 null을 반환
     }
 
