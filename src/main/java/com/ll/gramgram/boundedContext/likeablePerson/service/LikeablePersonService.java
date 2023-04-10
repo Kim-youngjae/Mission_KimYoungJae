@@ -32,8 +32,11 @@ public class LikeablePersonService {
         }
 
         // 동일한 인스타아이디, 동일한 호감코드로 등록하려고 하면 등록거부
-        RsData addRs = canAdd(member, username, attractiveTypeCode);
-        if (addRs != null) return addRs;
+        RsData<LikeablePerson> addRs = canAdd(member, username, attractiveTypeCode);
+        if (addRs != null) {
+            return addRs;
+        }
+        // TODO: null이 반환될 때 수행될 로직 구현
 
         InstaMember fromInstaMember = member.getInstaMember();
         InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
@@ -57,26 +60,46 @@ public class LikeablePersonService {
         return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeablePerson);
     }
 
-    private static RsData canAdd(Member member, String username, int attractiveTypeCode) {
+    public RsData canAdd(Member member, String username, int attractiveTypeCode) {
         List<LikeablePerson> fromLikeablePeople = member.getInstaMember().getFromLikeablePeople();
+
+        if (fromLikeablePeople.size() == 10) {
+            return RsData.of("F-3", "더 이상 등록이 되지 않습니다. <br>목록에서 제거 후 등록해주세요");
+        }
 
         for (LikeablePerson likeablePerson : fromLikeablePeople) {
             if (likeablePerson.getToInstaMemberUsername().equals(username)) {
                 if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
-                    return RsData.of("F-3", "이미 호감상대가 등록되어 있습니다 <br>(동일한 호감코드)");
+                    return RsData.of("F-4", "이미 호감상대가 등록되어 있습니다 <br>(동일한 호감코드)");
+                } else {
+                    // 인스타 아이디는 같은데 다른 호감코드로 등록했을 때의 경우
+                    String originalAttractiveTypeDisplayName = likeablePerson.getAttractiveTypeDisplayName();
+                    String convertedAttractiveTypeDisplayName = convertAttractiveTypeCode(attractiveTypeCode);
+
+                    modifyAttractiveTypeCode(likeablePerson, attractiveTypeCode);
+
+                    return RsData.of("S-2", "%s 에 대한 호감사유를 %s에서 %s으로 변경합니다.".formatted(username, originalAttractiveTypeDisplayName, convertedAttractiveTypeDisplayName));
                 }
             }
         }
-
-        if (fromLikeablePeople.size() == 10) {
-            return RsData.of("F-4", "더 이상 등록이 되지 않습니다. <br>목록에서 제거 후 등록해주세요");
-        }
-
-        return null; // 우선 null을 반환
+        return null;
     }
 
-    public List<LikeablePerson> findByFromInstaMemberId(Long fromInstaMemberId) {
-        return likeablePersonRepository.findByFromInstaMemberId(fromInstaMemberId);
+    //실제 호감 코드가 수정되는 부분
+    @Transactional
+    public void modifyAttractiveTypeCode(LikeablePerson likeablePerson, int attractiveTypeCode) {
+        LikeablePerson modifiedPersonData = likeablePerson.toBuilder()
+                .attractiveTypeCode(attractiveTypeCode)
+                .build();
+        this.likeablePersonRepository.save(modifiedPersonData);
+    }
+
+    private static String convertAttractiveTypeCode(int attractiveTypeCode) {
+        return switch (attractiveTypeCode) {
+            case 1 -> "외모";
+            case 2 -> "성격";
+            default -> "능력";
+        };
     }
 
     public Optional<LikeablePerson> getLikeablePerson(Long id) {
