@@ -15,9 +15,9 @@
         </div>
     </th:block>
 
-    <th:block th:if="${#lists.size(@rq.member.instaMember.fromLikeablePeople)} == 10">
-        <a href="/likeablePerson/list" class="btn btn-link">삭제하러 가기</a>
-    </th:block>
+<!--    <th:block th:if="${#lists.size(@rq.member.instaMember.fromLikeablePeople)} == 10">-->
+<!--        <a href="/likeablePerson/list" class="btn btn-link">삭제하러 가기</a>-->
+<!--    </th:block>-->
 
     <th:block th:if="${@rq.member.hasConnectedInstaMember}">
         <script th:inline="javascript">
@@ -57,8 +57,8 @@
             }
         </script>
 
-        <form th:action method="POST" class="p-10 max-w-sm flex flex-col gap-4"
-              onsubmit="AddForm__submit(this); return false;" th:if="${#lists.size(@rq.member.instaMember.fromLikeablePeople)} < 10">
+        <form th:action method="POST" class="p-10 max-w-sm flex flex-col gap-4 my-0"
+              onsubmit="AddForm__submit(this); return false;" >
             <div>
                 당신의 인스타ID : <span class="badge" th:text="${@rq.member.instaMember.username}"></span>
             </div>
@@ -86,8 +86,14 @@
                     </label>
                 </div>
             </div>
-            <div>
-                <input type="submit" value="추가" class="btn btn-primary">
+            <div class="flex">
+                <div>
+                    <input type="submit" value="추가" class="btn btn-primary">
+                </div>
+
+                <th:block th:if="${#lists.size(@rq.member.instaMember.fromLikeablePeople)} == 10">
+                    <a href="/likeablePerson/list" class="btn btn-link">삭제하러 가기</a>
+                </th:block>
             </div>
         </form>
     </th:block>
