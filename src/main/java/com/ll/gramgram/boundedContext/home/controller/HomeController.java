@@ -70,7 +70,7 @@ public class HomeController {
 
 @ToString
 class Teacher {
-//    @ToString.Exclude // 여기에만 있어도 되고
+    @ToString.Exclude // 여기에만 있어도 되고
     public List<Student> students = new ArrayList<>();
     public int age;
     public String name;
@@ -82,7 +82,7 @@ class Teacher {
 
 @ToString
 class Student {
-//    @ToString.Exclude // 여기에만 있어도 된다.
+    @ToString.Exclude // 여기에만 있어도 된다.
     public Teacher teacher;
     public int age;
     public String name;
