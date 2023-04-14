@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -31,15 +29,18 @@ public class LikeablePersonService {
             return RsData.of("F-1", "본인을 호감상대로 등록할 수 없습니다.");
         }
 
-        // 동일한 인스타아이디, 동일한 호감코드로 등록하려고 하면 등록거부
-        RsData<LikeablePerson> addRs = canAdd(member, username, attractiveTypeCode);
-        if (addRs != null) {
-            return addRs;
-        }
-        // TODO: null이 반환될 때 수행될 로직 구현
-
         InstaMember fromInstaMember = member.getInstaMember();
         InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
+
+        // like() 매개변수로말고 fromInstaMember와 toInstaMember 활용
+        Optional<LikeablePerson> optionalLikeablePerson = findByFromInstaIdAndToInstaId(fromInstaMember.getId(), toInstaMember.getId());
+
+        if (optionalLikeablePerson.isPresent()) {
+            // 존재한다 타입 코드가 같은지 아닌지 검사
+            LikeablePerson likeablePerson = optionalLikeablePerson.get();
+
+            return handleDuplicateAttractiveTypeCode(username, attractiveTypeCode, likeablePerson);
+        }
 
         LikeablePerson likeablePerson = LikeablePerson
                 .builder()
@@ -52,6 +53,7 @@ public class LikeablePersonService {
 
         likeablePersonRepository.save(likeablePerson); // 저장
 
+        // 양방향 매핑 추가
         // 내가 누구를 좋아한다는 호감표시를 추가
         fromInstaMember.addFromLikeablePerson(likeablePerson);
         // 누군가가 나를 좋아하는 호감표시를 추가
@@ -60,29 +62,23 @@ public class LikeablePersonService {
         return RsData.of("S-1", "입력하신 인스타유저(%s)를 호감상대로 등록되었습니다.".formatted(username), likeablePerson);
     }
 
-    public RsData canAdd(Member member, String username, int attractiveTypeCode) {
-        List<LikeablePerson> fromLikeablePeople = member.getInstaMember().getFromLikeablePeople();
+    private RsData<LikeablePerson> handleDuplicateAttractiveTypeCode(String username, int attractiveTypeCode, LikeablePerson likeablePerson) {
+        int originalAttractiveTypeCode = likeablePerson.getAttractiveTypeCode();
 
-        if (fromLikeablePeople.size() == 10) {
-            return RsData.of("F-3", "더 이상 등록이 되지 않습니다. <br>목록에서 제거 후 등록해주세요");
+        if (originalAttractiveTypeCode == attractiveTypeCode) {
+            return RsData.of("F-3", "이미 호감표시를 한 회원입니다");
         }
 
-        for (LikeablePerson likeablePerson : fromLikeablePeople) {
-            if (likeablePerson.getToInstaMemberUsername().equals(username)) {
-                if (likeablePerson.getAttractiveTypeCode() == attractiveTypeCode) {
-                    return RsData.of("F-4", "이미 호감상대가 등록되어 있습니다 <br>(동일한 호감코드)");
-                } else {
-                    // 인스타 아이디는 같은데 다른 호감코드로 등록했을 때의 경우
-                    String originalAttractiveTypeDisplayName = likeablePerson.getAttractiveTypeDisplayName();
-                    String convertedAttractiveTypeDisplayName = convertAttractiveTypeCode(attractiveTypeCode);
+        String originalAttractiveTypeDisplayName = likeablePerson.getAttractiveTypeDisplayName();
+        String convertedAttractiveTypeDisplayName = convertAttractiveTypeCode(attractiveTypeCode);
 
-                    modifyAttractiveTypeCode(likeablePerson, attractiveTypeCode);
+        modifyAttractiveTypeCode(likeablePerson, attractiveTypeCode);
 
-                    return RsData.of("S-2", "%s 에 대한 호감사유를 %s에서 %s으로 변경합니다.".formatted(username, originalAttractiveTypeDisplayName, convertedAttractiveTypeDisplayName));
-                }
-            }
-        }
-        return null;
+        return RsData.of("S-2", "%s 에 대한 호감사유를 %s에서 %s으로 변경합니다.".formatted(username, originalAttractiveTypeDisplayName, convertedAttractiveTypeDisplayName));
+    }
+
+    private Optional<LikeablePerson> findByFromInstaIdAndToInstaId(Long fromInstaMemberId, Long toInstaMemberId) {
+        return likeablePersonRepository.findByFromInstaMemberIdAndToInstaMemberId(fromInstaMemberId, toInstaMemberId);
     }
 
     //실제 호감 코드가 수정되는 부분
