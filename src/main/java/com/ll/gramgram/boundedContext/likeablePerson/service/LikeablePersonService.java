@@ -1,5 +1,6 @@
 package com.ll.gramgram.boundedContext.likeablePerson.service;
 
+import com.ll.gramgram.base.appConfig.AppConfig;
 import com.ll.gramgram.base.rsData.RsData;
 import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.instaMember.service.InstaMemberService;
@@ -31,6 +32,12 @@ public class LikeablePersonService {
 
         InstaMember fromInstaMember = member.getInstaMember();
         InstaMember toInstaMember = instaMemberService.findByUsernameOrCreate(username).getData();
+
+        long likeablePersonFromMax = AppConfig.getLikeablePersonFromMax();
+
+        if (fromInstaMember.getFromLikeablePeople().size() == likeablePersonFromMax) {
+            return RsData.of("F-3", "%d명까지 등록할 수 있습니다. <br> 목록에서 제거 후 등록해주세요".formatted(likeablePersonFromMax));
+        }
 
         // like() 매개변수로말고 fromInstaMember와 toInstaMember 활용
         Optional<LikeablePerson> optionalLikeablePerson = findByFromInstaIdAndToInstaId(fromInstaMember.getId(), toInstaMember.getId());
@@ -66,7 +73,7 @@ public class LikeablePersonService {
         int originalAttractiveTypeCode = likeablePerson.getAttractiveTypeCode();
 
         if (originalAttractiveTypeCode == attractiveTypeCode) {
-            return RsData.of("F-3", "이미 호감표시를 한 회원입니다");
+            return RsData.of("F-4", "이미 호감표시를 한 회원입니다");
         }
 
         String originalAttractiveTypeDisplayName = likeablePerson.getAttractiveTypeDisplayName();
