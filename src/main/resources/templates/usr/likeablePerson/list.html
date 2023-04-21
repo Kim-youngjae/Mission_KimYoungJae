@@ -6,7 +6,7 @@
 
 <body>
 
-<mai layout:fragment="main">
+<main layout:fragment="main">
     <th:block th:unless="${@rq.member.hasConnectedInstaMember}">
         <div>먼저 본인의 인스타그램 아이디를 입력해주세요.</div>
 
@@ -15,9 +15,9 @@
         </div>
     </th:block>
 
-    <th:block th:if="${@rq.member.hasConnectedInstaMember}">
+    <th:block th:if="${@rq.member.hasConnectedInstaMember} and ${#lists.size(@rq.member.instaMember.fromLikeablePeople)} <= 10">
         <ul>
-            <li th:each="likeablePerson: ${likeablePeople}">
+            <li th:each="likeablePerson: ${@rq.member.instaMember.fromLikeablePeople}">
                 <span class="toInstaMember_username" th:text="${likeablePerson.toInstaMember.username}"></span>
                 <span class="toInstaMember_attractiveTypeDisplayName"
                       th:text="${likeablePerson.attractiveTypeDisplayName}"></span>
@@ -28,7 +28,7 @@
             </li>
         </ul>
     </th:block>
-</mai>
+</main>
 </body>
 
 </html>
