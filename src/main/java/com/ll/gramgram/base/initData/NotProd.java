@@ -39,10 +39,10 @@ public class NotProd {
             likeablePersonService.like(memberUser3, "insta_user100", 2);
 
             long likeablePersonFromMax = AppConfig.getLikeablePersonFromMax();
+
             for (int i = 0; i < likeablePersonFromMax; i++) {
                 likeablePersonService.like(memberUser5, "insta_user101", 2);
             }
-
 
         };
     }
