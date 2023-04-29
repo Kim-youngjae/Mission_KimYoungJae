@@ -6,6 +6,9 @@ import com.ll.gramgram.boundedContext.instaMember.entity.InstaMember;
 import com.ll.gramgram.boundedContext.likeablePerson.entity.LikeablePerson;
 import com.ll.gramgram.boundedContext.likeablePerson.service.LikeablePersonService;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -63,12 +66,11 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
     public String delete(@PathVariable("id") Long id) {
-        // TODO: 삭제를 처리하기 전에 해당 항목에 대한 소유권이 본인(로그인한 사람)에게 있는지 체크해야 한다.
-        LikeablePerson likeablePerson = likeablePersonService.getLikeablePerson(id).orElse(null); // likeablePerson 테이블에 삭제 가능한 행 정보가 있는지 조회
+        LikeablePerson likeablePerson = likeablePersonService.findById(id).orElse(null); // likeablePerson 테이블에 삭제 가능한 행 정보가 있는지 조회
 
-        RsData canActorDeleteRsData = likeablePersonService.canActorDelete(rq.getMember(), likeablePerson); // 삭제가 가능한지 서비스로 요청 없으면 null값이 들어감
+        RsData canDeleteRsData = likeablePersonService.canActorDelete(rq.getMember(), likeablePerson); // 삭제가 가능한지 서비스로 요청 없으면 null값이 들어감
 
-        if (canActorDeleteRsData.isFail()) return rq.historyBack(canActorDeleteRsData); // 서비스에서의 삭제 판단 메서드 반환값이 isFail()이면 뒤로 돌아감
+        if (canDeleteRsData.isFail()) return rq.historyBack(canDeleteRsData); // 서비스에서의 삭제 판단 메서드 반환값이 isFail()이면 뒤로 돌아감
 
         RsData deleteRsData = likeablePersonService.delete(likeablePerson); // 가능해서 삭제가능 하면 서비스에 삭제 요청
 
@@ -77,5 +79,40 @@ public class LikeablePersonController {
         }
 
         return rq.redirectWithMsg("/likeablePerson/list", deleteRsData); // 모든 과정이 성공적으로 이루어지면 redirect
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/modify/{id}")
+    public String showModify(@PathVariable Long id, Model model) {
+        LikeablePerson likeablePerson = likeablePersonService.findById(id).orElseThrow(); // 수정하고자 하는 대상이 있으면 찾아서 가져옴
+
+        RsData canModifyRsData = likeablePersonService.canModifyLike(rq.getMember(), likeablePerson); // 수정이 가능한지 가능하지 않은지 판단
+
+        if (canModifyRsData.isFail()) return rq.historyBack(canModifyRsData); // 수정할 수 없다면 뒤로돌림
+
+        model.addAttribute("likeablePerson", likeablePerson); // 수정한 결과를 모델로 반환
+
+        return "usr/likeablePerson/modify";
+    }
+
+    @AllArgsConstructor
+    @Getter
+    public static class ModifyForm {
+        @NotNull
+        @Min(1)
+        @Max(3)
+        private final int attractiveTypeCode;
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @PostMapping("/modify/{id}")
+    public String modify(@PathVariable Long id, @Valid ModifyForm modifyForm) {
+        RsData<LikeablePerson> rsData = likeablePersonService.modifyLike(rq.getMember(), id, modifyForm.getAttractiveTypeCode());
+
+        if (rsData.isFail()) {
+            return rq.historyBack(rsData);
+        }
+
+        return rq.redirectWithMsg("/usr/likeablePerson/list", rsData);
     }
 }

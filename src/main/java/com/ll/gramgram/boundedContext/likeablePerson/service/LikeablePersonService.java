@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -105,10 +106,6 @@ public class LikeablePersonService {
         };
     }
 
-    public Optional<LikeablePerson> getLikeablePerson(Long id) {
-        return this.likeablePersonRepository.findById(id);
-    }
-
     @Transactional
     public RsData delete(LikeablePerson likeablePerson) {
         this.likeablePersonRepository.delete(likeablePerson);
@@ -128,5 +125,40 @@ public class LikeablePersonService {
             return RsData.of("F-2", "권한이 없습니다.");
 
         return RsData.of("S-1", "삭제가능합니다.");
+    }
+
+    public Optional<LikeablePerson> findById(Long id) {
+        return likeablePersonRepository.findById(id);
+    }
+
+    public RsData canModifyLike(Member actor, LikeablePerson likeablePerson) {
+        //수정을 하려면 일단 인스타 회원등록이 되어있는지 알아야 함.
+        if (!actor.hasConnectedInstaMember()) {
+            return RsData.of("F-1", "먼저 본인의 인스타그램 아이디를 입력해주세요.");
+        }
+
+        // 연동이 되어있다면 인스타 회원 정보 가져오기
+        InstaMember fromInstaMember = actor.getInstaMember();
+
+        if (!Objects.equals(likeablePerson.getFromInstaMember().getId(), fromInstaMember.getId())) { // 삭제할 수 있는 권한이 있는지 확인
+            return RsData.of("F-2", "해당 호감표시를 취소할 권한이 없습니다.");
+        }
+
+
+        return RsData.of("S-1", "호감표시취소가 가능합니다.");
+    }
+
+    public RsData<LikeablePerson> modifyLike(Member actor, Long id, int attractiveTypeCode) {
+        LikeablePerson likeablePerson = findById(id).orElseThrow();
+
+        RsData canModifyRsData = canModifyLike(actor, likeablePerson);
+
+        if (canModifyRsData.isFail()) { // 권한 체크를 실패하면 실패결과 반환
+            return canModifyRsData;
+        }
+
+        modifyAttractiveTypeCode(likeablePerson, attractiveTypeCode); // 호감 사유를 변경
+
+        return RsData.of("S-1", "호감사유를 수정하였습니다."); // 성공 코드 반환
     }
 }

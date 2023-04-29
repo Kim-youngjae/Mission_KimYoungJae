@@ -1,0 +1,95 @@
+<html layout:decorate="~{usr/layout/layout.html}">
+
+<head>
+    <title>호감사유 변경</title>
+</head>
+
+<body>
+
+<main layout:fragment="main" className="flex-grow flex items-center justify-center">
+
+    <script th:inline="javascript">
+        const myInstaMemberUsername = /*[[ ${@rq.member.instaMember.username} ]]*/ null;
+
+        function ModifyLikeForm__submit(form) {
+            form.submit(); // 폼 발송
+        }
+    </script>
+
+    <div className="max-w-2xl w-full px-4">
+        <h1 className="mb-4">
+            <i className="fa-solid fa-pen-to-square"></i>
+            호감사유 변경
+        </h1>
+
+        <form className="flex flex-col gap-6" method="POST" th:action
+              onSubmit="ModifyLikeForm__submit(this); return false;">
+            <div className="form-control">
+                <label className="label">
+                    <span className="label-text">당신의 인스타 아이디</span>
+                </label>
+                <div className="badge badge-primary" th:text="${likeablePerson.fromInstaMember.username}"></div>
+            </div>
+
+            <div className="form-control">
+                <label className="label">
+                    <span className="label-text">상대방 인스타 아이디</span>
+                </label>
+                <div className="badge badge-primary" th:text="${likeablePerson.toInstaMember.username}"></div>
+                <a th:href="@{|https://instagram.com/${likeablePerson.toInstaMember.username}|}" target="_blank"
+                   className="block mt-3 text-sm break-all underline text-blue-400">
+                    <span>https://instagram.com/</span><span th:text="${likeablePerson.toInstaMember.username}"
+                                                             className="text-red-300"></span>
+                </a>
+            </div>
+
+            <div className="form-control">
+                <label className="label">
+                    <span className="label-text">호감사유</span>
+                </label>
+
+                <!-- 라벨을 클릭하면 라벨의 하위요소인 버튼(체크,라디오,일반 등)이 클릭되는 효과) -->
+                <div className="flex justify-center gap-4">
+                    <label className="flex gap-2 items-center cursor-pointer">
+                        <input type="radio" name="attractiveTypeCode" value="1" className="radio peer">
+                        <span className="text-gray-400 peer-checked:text-gray-900 peer-checked:font-bold peer-focus:text-gray-700">
+                                <i className="fa-solid fa-person-rays"></i>
+                                외모
+                            </span>
+                    </label>
+
+                    <label className="flex gap-2 items-center cursor-pointer">
+                        <input type="radio" name="attractiveTypeCode" value="2" className="radio peer">
+                        <span className="text-gray-400 peer-checked:text-gray-900 peer-checked:font-bold peer-focus:text-gray-700">
+                                <i className="fa-regular fa-face-smile"></i>
+                                성격
+                            </span>
+                    </label>
+
+                    <label className="flex gap-2 items-center cursor-pointer">
+                        <input type="radio" name="attractiveTypeCode" value="3" className="radio peer">
+                        <span className="text-gray-400 peer-checked:text-gray-900 peer-checked:font-bold peer-focus:text-gray-700">
+                                <i className="fa-solid fa-people-roof"></i>
+                                능력
+                            </span>
+                    </label>
+
+                    <script th:inline="javascript">
+                        // 타임리프 문법(파라미터, ? 뒤에 입력된 매개변수들)
+                        const inputValue__attractiveTypeCode = /*[[ ${likeablePerson.attractiveTypeCode} ]]*/ null;
+                        $(`input[name=attractiveTypeCode][value=${inputValue__attractiveTypeCode}]:last`).prop('checked', true);
+                    </script>
+                </div>
+
+            </div>
+
+            <button id="btn-modify-like-1" className="btn btn-block btn-primary gap-1">
+                <i className="fa-solid fa-pen-to-square"></i>
+                <span>호감사유 변경</span>
+            </button>
+        </form>
+    </div>
+</main>
+</body>
+
+</html>
