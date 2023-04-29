@@ -42,8 +42,6 @@ public class NotProd {
             for (int i = 0; i < likeablePersonFromMax; i++) {
                 likeablePersonService.like(memberUser5, "insta_user101", 2);
             }
-
-
         };
     }
 }
