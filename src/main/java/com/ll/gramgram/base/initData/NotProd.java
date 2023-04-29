@@ -9,6 +9,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.transaction.annotation.Transactional;
 
 @Configuration
 @Profile({"dev", "test"})
@@ -19,31 +20,33 @@ public class NotProd {
             InstaMemberService instaMemberService,
             LikeablePersonService likeablePersonService
     ) {
-        return args -> {
-            Member memberAdmin = memberService.join("admin", "1234").getData();
-            Member memberUser1 = memberService.join("user1", "1234").getData();
-            Member memberUser2 = memberService.join("user2", "1234").getData();
-            Member memberUser3 = memberService.join("user3", "1234").getData();
-            Member memberUser4 = memberService.join("user4", "1234").getData();
-            Member memberUser5 = memberService.join("user5", "1234").getData();
+        return new CommandLineRunner() {
+            @Override
+            @Transactional
+            public void run(String... args) throws Exception {
+                Member memberAdmin = memberService.join("admin", "1234").getData();
+                Member memberUser1 = memberService.join("user1", "1234").getData();
+                Member memberUser2 = memberService.join("user2", "1234").getData();
+                Member memberUser3 = memberService.join("user3", "1234").getData();
+                Member memberUser4 = memberService.join("user4", "1234").getData();
+                Member memberUser5 = memberService.join("user5", "1234").getData();
 
-            Member memberUser5ByKakao = memberService.whenSocialLogin("KAKAO", "KAKAO__2731659195").getData();
+                Member memberUser5ByKakao = memberService.whenSocialLogin("KAKAO", "KAKAO__2731659195").getData();
 
-            instaMemberService.connect(memberUser2, "insta_user2", "M");
-            instaMemberService.connect(memberUser3, "insta_user3", "W");
-            instaMemberService.connect(memberUser4, "insta_user4", "M");
-            instaMemberService.connect(memberUser5, "insta_user5", "W");
+                instaMemberService.connect(memberUser2, "insta_user2", "M");
+                instaMemberService.connect(memberUser3, "insta_user3", "W");
+                instaMemberService.connect(memberUser4, "insta_user4", "M");
+                instaMemberService.connect(memberUser5, "insta_user5", "W");
 
+                likeablePersonService.like(memberUser3, "insta_user4", 1);
+                likeablePersonService.like(memberUser3, "insta_user100", 2);
 
-            likeablePersonService.like(memberUser3, "insta_user4", 1);
-            likeablePersonService.like(memberUser3, "insta_user100", 2);
+                long likeablePersonFromMax = AppConfig.getLikeablePersonFromMax();
 
-            long likeablePersonFromMax = AppConfig.getLikeablePersonFromMax();
-
-            for (int i = 0; i < likeablePersonFromMax; i++) {
-                likeablePersonService.like(memberUser5, "insta_user101", 2);
+//                for (int i = 0; i < likeablePersonFromMax; i++) {
+//                    likeablePersonService.like(memberUser5, "insta_user101", 2);
+//                }
             }
-
         };
     }
 }

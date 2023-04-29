@@ -35,7 +35,6 @@ public class InstaMemberService {
             return RsData.of("F-1", "해당 인스타그램 아이디는 이미 다른 사용자와 연결되었습니다.");
         }
 
-        //
         RsData<InstaMember> instaMemberRsData = findByUsernameOrCreate(username, gender);
 
         memberService.updateInstaMember(member, instaMemberRsData.getData());
