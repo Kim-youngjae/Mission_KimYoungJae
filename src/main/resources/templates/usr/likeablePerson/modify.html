@@ -52,7 +52,7 @@
                 <div className="flex justify-center gap-4">
                     <label className="flex gap-2 items-center cursor-pointer">
                         <input type="radio" name="attractiveTypeCode" value="1" className="radio peer">
-                        <span className="text-gray-400 peer-checked:text-gray-900 peer-checked:font-bold peer-focus:text-gray-700">
+                        <span classNameg="text-gray-400 peer-checked:text-gray-900 peer-checked:font-bold peer-focus:text-gray-700">
                                 <i className="fa-solid fa-person-rays"></i>
                                 외모
                             </span>
@@ -88,6 +88,14 @@
                 <span>호감사유 변경</span>
             </button>
         </form>
+
+        <div class="text-center mt-4">
+            <a th:if="${@rq.member.hasConnectedInstaMember}" href="/usr/likeablePerson/like"
+               class="btn btn-link">호감표시</a>
+            <a th:if="${@rq.member.hasConnectedInstaMember}" href="/usr/likeablePerson/list"
+               class="btn btn-link">호감목록</a>
+            <a th:if="${@rq.member.hasConnectedInstaMember}" href="/usr/member/me" class="btn btn-link">내 정보</a>
+        </div>
     </div>
 </main>
 </body>

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping("/likeablePerson")
+@RequestMapping("/usr/likeablePerson")
 @RequiredArgsConstructor
 public class LikeablePersonController {
     private final Rq rq;
@@ -28,7 +28,7 @@ public class LikeablePersonController {
 
     @GetMapping("/like")
     public String showLike() {
-        return "usr/likeablePerson/like";
+        return "/usr/likeablePerson/like";
     }
 
     @AllArgsConstructor
@@ -46,7 +46,7 @@ public class LikeablePersonController {
             return rq.historyBack(createRsData);
         }
 
-        return rq.redirectWithMsg("/likeablePerson/list", createRsData);
+        return rq.redirectWithMsg("/usr/likeablePerson/list", createRsData);
     }
 
     @GetMapping("/list")
@@ -60,7 +60,7 @@ public class LikeablePersonController {
             model.addAttribute("likeablePeople", likeablePeople);
         }
 
-        return "usr/likeablePerson/list";
+        return "/usr/likeablePerson/list";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -78,7 +78,7 @@ public class LikeablePersonController {
             return rq.historyBack(deleteRsData); // id가 없어서 삭제가 실패할 경우 뒤로 원복
         }
 
-        return rq.redirectWithMsg("/likeablePerson/list", deleteRsData); // 모든 과정이 성공적으로 이루어지면 redirect
+        return rq.redirectWithMsg("/usr/likeablePerson/list", deleteRsData); // 모든 과정이 성공적으로 이루어지면 redirect
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -92,7 +92,7 @@ public class LikeablePersonController {
 
         model.addAttribute("likeablePerson", likeablePerson); // 수정한 결과를 모델로 반환
 
-        return "usr/likeablePerson/modify";
+        return "/usr/likeablePerson/modify";
     }
 
     @AllArgsConstructor

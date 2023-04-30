@@ -1,68 +1,46 @@
-<html layout:decorate="~{usr/layout/layout.html}" xmlns:layout="http://www.w3.org/1999/xhtml">
-
+<html layout:decorate="~{usr/layout/layout.html}">
 <head>
-    <title>당신이 좋아하는 사람이 누군지 알려주세요.</title>
+    <title>호감표시</title>
 </head>
-
 <body>
-
-<main layout:fragment="main" class="flex flex-grow items-center justify-center">
-    <th:block th:unless="${@rq.member.hasConnectedInstaMember}">
-        <div>먼저 본인의 인스타그램 아이디를 입력해주세요.</div>
-
-        <div>
-            <a href="/instaMember/connect" class="btn btn-link">본인의 인스타그램 아이디 입력하기</a>
-        </div>
-    </th:block>
-
-<!--    <th:block th:if="${#lists.size(@rq.member.instaMember.fromLikeablePeople)} == 10">-->
-<!--        <a href="/likeablePerson/list" class="btn btn-link">삭제하러 가기</a>-->
-<!--    </th:block>-->
+<main layout:fragment="main" class="flex-grow flex items-center justify-center">
+    <div th:unless="${@rq.member.hasConnectedInstaMember}" th:include="usr/part/needToConnect::base"></div>
 
     <th:block th:if="${@rq.member.hasConnectedInstaMember}">
         <script th:inline="javascript">
             const myInstaMemberUsername = /*[[ ${@rq.member.instaMember.username} ]]*/ null;
-
             function LikeForm__submit(form) {
                 // username 이(가) 올바른지 체크
                 form.username.value = form.username.value.trim(); // 입력란의 입력값에 있을지 모르는 좌우공백제거
-
                 if (form.username.value.length === 0) {
                     toastWarning('상대방의 인스타그램 아이디를 입력해주세요.');
                     form.username.focus();
                     return;
                 }
-
                 if (form.username.value.length < 4) {
                     toastWarning('상대방의 인스타그램 아이디를 4자 이상 입력해주세요.');
                     form.username.focus();
                     return;
                 }
-
                 if (form.username.value === myInstaMemberUsername) {
                     toastWarning('본인을 호감상대로 등록할 수 없습니다.');
                     form.username.focus();
                     return;
                 }
-
                 const $checkedAttractiveTypeCodeRadioButton = $(form).find("[name=attractiveTypeCode]:checked");
-
                 if ($checkedAttractiveTypeCodeRadioButton.length === 0) {
                     toastWarning('상대방의 매력포인트를 선택해주세요.');
                     $(form).find("[name=attractiveTypeCode]:first").focus();
                     return;
                 }
-
                 form.submit(); // 폼 발송
             }
         </script>
-
         <div class="max-w-2xl w-full px-4">
             <h1 class="mb-4">
                 <i class="fa-solid fa-heart-circle-plus"></i>
                 호감표시
             </h1>
-
             <form class="flex flex-col gap-6" method="POST" th:action onsubmit="LikeForm__submit(this); return false;">
                 <div class="form-control">
                     <label class="label">
@@ -70,7 +48,6 @@
                     </label>
                     <div class="badge badge-primary" th:text="${@rq.member.instaMember.username}"></div>
                 </div>
-
                 <div class="form-control">
                     <label class="label">
                         <span class="label-text">상대방 인스타 아이디</span>
@@ -91,12 +68,10 @@
                         $(`input[name="username"]:last`).keyup();
                     </script>
                 </div>
-
                 <div class="form-control">
                     <label class="label">
-                        <span class="label-text">매력포인트</span>
+                        <span class="label-text">호감사유</span>
                     </label>
-
                     <!-- 라벨을 클릭하면 라벨의 하위요소인 버튼(체크,라디오,일반 등)이 클릭되는 효과) -->
                     <div class="flex justify-center gap-4">
                         <label class="flex gap-2 items-center cursor-pointer">
@@ -106,7 +81,6 @@
                                 외모
                             </span>
                         </label>
-
                         <label class="flex gap-2 items-center cursor-pointer">
                             <input type="radio" name="attractiveTypeCode" value="2" class="radio peer">
                             <span class="text-gray-400 peer-checked:text-gray-900 peer-checked:font-bold peer-focus:text-gray-700">
@@ -114,7 +88,6 @@
                                 성격
                             </span>
                         </label>
-
                         <label class="flex gap-2 items-center cursor-pointer">
                             <input type="radio" name="attractiveTypeCode" value="3" class="radio peer">
                             <span class="text-gray-400 peer-checked:text-gray-900 peer-checked:font-bold peer-focus:text-gray-700">
@@ -123,16 +96,19 @@
                             </span>
                         </label>
                     </div>
-
                 </div>
                 <button id="btn-like-1" class="btn btn-block btn-primary gap-1">
                     <i class="fa-solid fa-heart-circle-plus"></i>
                     <span>호감표시</span>
                 </button>
             </form>
+
+            <div class="text-center mt-4">
+                <a th:if="${@rq.member.hasConnectedInstaMember}" href="list" class="btn btn-link">호감목록</a>
+                <a th:if="${@rq.member.hasConnectedInstaMember}" href="/usr/member/me" class="btn btn-link">내 정보</a>
+            </div>
         </div>
     </th:block>
 </main>
 </body>
-
 </html>
