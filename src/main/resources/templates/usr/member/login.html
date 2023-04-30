@@ -55,17 +55,17 @@
 
             <form th:action method="POST" class="flex flex-col gap-6" onsubmit="LoginForm__submit(this); return false;">
                 <div class="form-control">
-                    <label class="label">
+                    <label for="username" class="label">
                         <span class="label-text">아이디</span>
                     </label>
-                    <input type="text" name="username" maxlength="30" placeholder="아이디" class="input input-bordered" autofocus />
+                    <input type="text" id="username" name="username" maxlength="30" placeholder="아이디" class="input input-bordered" autofocus />
                 </div>
 
                 <div class="form-control">
-                    <label class="label">
+                    <label for="password" class="label">
                         <span class="label-text">비빌번호</span>
                     </label>
-                    <input type="password" name="password" placeholder="비빌번호" class="input input-bordered" />
+                    <input type="password" id="password" name="password" placeholder="비빌번호" class="input input-bordered" />
                 </div>
 
                 <button id="btn-login-1" class="btn btn-block btn-primary gap-1">

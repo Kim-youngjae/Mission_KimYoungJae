@@ -56,7 +56,7 @@ public class MemberControllerTests {
                         <input type="password" name="password"
                         """.stripIndent().trim())))
                 .andExpect(content().string(containsString("""
-                        <input type="submit" value="회원가입"
+                        id="btn-join-1"
                         """.stripIndent().trim())));
     }
 
@@ -161,10 +161,10 @@ public class MemberControllerTests {
                 .andExpect(handler().methodName("showLogin"))
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(content().string(containsString("""
-                        <input type="text" name="username"
+                        <input type="text" id="username" name="username"
                         """.stripIndent().trim())))
                 .andExpect(content().string(containsString("""
-                        <input type="password" name="password"
+                        <input type="password" id="password" name="password"
                         """.stripIndent().trim())))
                 .andExpect(content().string(containsString("""
                         id="btn-login-1"

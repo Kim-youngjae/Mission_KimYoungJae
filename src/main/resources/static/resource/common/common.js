@@ -43,3 +43,8 @@ function toastWarning(msg) {
         toastr["warning"](pureMsg, "경고");
     }
 }
+
+// 어떠한 기능을 살짝 늦게(0.1 초 미만)
+function setTimeoutZero(callback) {
+    setTimeout(callback, 0); // 최소 대기 시간이 4ms인데 0.1초 미만으로 늦게 실행시키려면 매개변수에 0을 줘야 함
+}
