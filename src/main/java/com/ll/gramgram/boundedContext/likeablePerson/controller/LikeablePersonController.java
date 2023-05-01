@@ -26,6 +26,7 @@ public class LikeablePersonController {
     private final Rq rq;
     private final LikeablePersonService likeablePersonService;
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/like")
     public String showLike() {
         return "/usr/likeablePerson/like";
@@ -38,6 +39,7 @@ public class LikeablePersonController {
         private final int attractiveTypeCode;
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/like")
     public String like(@Valid LikeForm likeForm) {
         RsData<LikeablePerson> createRsData = likeablePersonService.like(rq.getMember(), likeForm.getUsername(), likeForm.getAttractiveTypeCode());
@@ -49,6 +51,7 @@ public class LikeablePersonController {
         return rq.redirectWithMsg("/usr/likeablePerson/list", createRsData);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/list")
     public String showList(Model model) {
         InstaMember instaMember = rq.getMember().getInstaMember();
@@ -65,14 +68,14 @@ public class LikeablePersonController {
 
     @PreAuthorize("isAuthenticated()")
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable("id") Long id) {
+    public String cancel(@PathVariable("id") Long id) {
         LikeablePerson likeablePerson = likeablePersonService.findById(id).orElse(null); // likeablePerson 테이블에 삭제 가능한 행 정보가 있는지 조회
 
-        RsData canDeleteRsData = likeablePersonService.canActorDelete(rq.getMember(), likeablePerson); // 삭제가 가능한지 서비스로 요청 없으면 null값이 들어감
+        RsData canDeleteRsData = likeablePersonService.canCancel(rq.getMember(), likeablePerson); // 삭제가 가능한지 서비스로 요청 없으면 null값이 들어감
 
         if (canDeleteRsData.isFail()) return rq.historyBack(canDeleteRsData); // 서비스에서의 삭제 판단 메서드 반환값이 isFail()이면 뒤로 돌아감
 
-        RsData deleteRsData = likeablePersonService.delete(likeablePerson); // 가능해서 삭제가능 하면 서비스에 삭제 요청
+        RsData deleteRsData = likeablePersonService.cancel(likeablePerson); // 가능해서 삭제가능 하면 서비스에 삭제 요청
 
         if (deleteRsData.isFail()) {
             return rq.historyBack(deleteRsData); // id가 없어서 삭제가 실패할 경우 뒤로 원복
@@ -107,12 +110,20 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
     public String modify(@PathVariable Long id, @Valid ModifyForm modifyForm) {
-        RsData<LikeablePerson> rsData = likeablePersonService.modifyLike(rq.getMember(), id, modifyForm.getAttractiveTypeCode());
+        RsData<LikeablePerson> rsData = likeablePersonService.modifyAttractive(rq.getMember(), id, modifyForm.getAttractiveTypeCode());
 
         if (rsData.isFail()) {
             return rq.historyBack(rsData);
         }
 
         return rq.redirectWithMsg("/usr/likeablePerson/list", rsData);
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/toList")
+    @ResponseBody
+    public String showToList(Model model) {
+        //TODO : showToList 구현해야 함
+        return "usr/likeablePerson/toList 구현해야 함";
     }
 }
