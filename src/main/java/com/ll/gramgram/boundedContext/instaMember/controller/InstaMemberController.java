@@ -27,14 +27,14 @@ public class InstaMemberController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/connect")
     public String showConnect() {
-        return "/usr/instaMember/connect";
+        return "usr/instaMember/connect";
     }
 
     @AllArgsConstructor
     @Getter
     public static class ConnectForm {
         @NotBlank
-        @Size(min = 4, max = 30)
+        @Size(min = 3, max = 30)
         private final String username;
         @NotBlank
         @Size(min = 1, max = 1)
@@ -46,7 +46,7 @@ public class InstaMemberController {
     public String connect(@Valid ConnectForm connectForm) {
         RsData<InstaMember> rsData = instaMemberService.connect(rq.getMember(), connectForm.getUsername(), connectForm.getGender());
 
-        if ( rsData.isFail() ) {
+        if (rsData.isFail()) {
             return rq.historyBack(rsData);
         }
 
