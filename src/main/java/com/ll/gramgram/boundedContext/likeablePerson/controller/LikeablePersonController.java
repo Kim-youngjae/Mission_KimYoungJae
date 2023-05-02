@@ -93,9 +93,9 @@ public class LikeablePersonController {
 
         if (canModifyRsData.isFail()) return rq.historyBack(canModifyRsData); // 수정할 수 없다면 뒤로돌림
 
-        model.addAttribute("likeablePerson", likeablePerson); // 수정한 결과를 모델로 반환
+        model.addAttribute("likeablePerson", likeablePerson); // 수정한 결과를 모델에 담고
 
-        return "/usr/likeablePerson/modify";
+        return "/usr/likeablePerson/modify"; // 해당 뷰 페이지로 모델을 보냄
     }
 
     @AllArgsConstructor
@@ -109,7 +109,7 @@ public class LikeablePersonController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/modify/{id}")
-    public String modify(@PathVariable Long id, @Valid ModifyForm modifyForm) {
+    public String modify(@PathVariable Long id, @Valid ModifyForm modifyForm)    {
         RsData<LikeablePerson> rsData = likeablePersonService.modifyAttractive(rq.getMember(), id, modifyForm.getAttractiveTypeCode());
 
         if (rsData.isFail()) {
