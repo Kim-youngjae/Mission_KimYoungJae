@@ -137,10 +137,10 @@ public class LikeablePersonService {
         }
 
         if (fromLikeablePerson != null) {
-            return RsData.of("S-1", "%s님에 대해서 호감표시가 가능합니다.".formatted(username));
+            return RsData.of("S-2", "%s님에 대해서 호감표시가 가능합니다.".formatted(username));
         }
 
-        return RsData.of("S-2", "%s님에 대해서 호감표시가 가능합니다.".formatted(username));
+        return RsData.of("S-1", "%s님에 대해서 호감표시가 가능합니다.".formatted(username));
     }
 
     public Optional<LikeablePerson> findByFromInstaMember_usernameAndToInstaMember_username(String fromInstaMemberUsername, String toInstaMemberUsername) {
