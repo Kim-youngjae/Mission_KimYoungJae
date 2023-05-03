@@ -12,7 +12,7 @@
 
 어떤 부분인지 찾아보자
 
-![img.png](images/img.png)
+![img.png](images_of_3Week/img.png)
 
 백엔드 쪽에서 체크하는 로직만 추가하면 됩니다. (해야할 부분)
 
@@ -41,7 +41,7 @@
 
 서버를 생성하고 설정을 할 때에 인증키 설정에서 생성을 하게 되는데 이건 꼭 따로 가지고 있어야 한다..!
 
-![img_0.png](images/img_0.png)
+![img_0.png](images_of_3Week/img_0.png)
 
 얘가 있어야 서버 리눅스의 비밀번호를 까먹더라도 다시 이 인증키를 통해 복구할 수 있다.
 
@@ -49,15 +49,15 @@
 
 그럼 오픈할 부분을 정해야 하는데
 
-![img_1.png](images/img_1.png)
+![img_1.png](images_of_3Week/img_1.png)
 
 집에서만 접근할 수 있도록 하는 방화벽을 열어두는 설정
 
 나머지 포트 설정을 해주고 난 뒤 생성을 마치면 이런 알림이 뜨는데 이후 의미 해석을 위해서 남겨 놓았다.
 
-![img_2.png](images/img_2.png)
+![img_2.png](images_of_3Week/img_2.png)
 
-![img_3.png](images/img_3.png)
+![img_3.png](images_of_3Week/img_3.png)
 
 더 자세한 ACG에 대한 설명은 강사님의 필기를 인용했다.
 
@@ -130,28 +130,65 @@ YUM을 사용하여 설치해야 한다.
 
 뭔가를 작업하고 설치하고 작업을 끝난 뒤 다시 삭제를 해야하는 수고로움이 발생할 수 있다. 이때 이 /tmp 파일을 사용해서 이 안에서 작업하게 되면 나중에 언젠간 tmp폴더는 지워지기 때문에 이 안에서 작업 같은것을 하면 된다!
 
-### N주차 미션 요약
+### • ./gradlew clean build 빌드 시 오류 발생
 
 ---
 
-**[접근 방법]**
+빌드를 진행할 때에 test가 수행되어지는데 이 부분은 테스트가 통과되지 않으면 빌드가 되지 않음
 
-체크리스트를 중심으로 각각의 기능을 구현하기 위해 어떤 생각을 했는지 정리합니다.
+![img_4.png](images_of_3Week/img_4.png)
 
-- 무엇에 중점을 두고 구현하였는지, 어떤 공식문서나 예제를 참고하여 개발하였는지 뿐만 아니라 미션을 진행하기 전 개인적으로 실습한 것도 포함하여 작성해주시기 바랍니다.
-- 실제 개발 과정에서 목표하던 바가 무엇이었는지 작성해주시기 바랍니다.
-- 구현 과정에 따라 어떤 결과물이 나오게 되었는지 최대한 상세하게 작성해주시기 바랍니다.
+@Test
+@DisplayName("호감사유를 변경하면 쿨타임이 갱신된다.")
+void t008() throws Exception {
+// 현재시점 기준에서 쿨타임이 다 차는 시간을 구한다.(미래)
+LocalDateTime coolTime = AppConfig.genLikeablePersonModifyUnlockDate();
 
+```java
+  @Test
+  @DisplayName("호감사유를 변경하면 쿨타임이 갱신된다.")
+  void t008() throws Exception {
+          // 현재시점 기준에서 쿨타임이 다 차는 시간을 구한다.(미래)
+          LocalDateTime coolTime = AppConfig.genLikeablePersonModifyUnlockDate();
+  
+          Member memberUser3 = memberService.findByUsername("user3").orElseThrow();
+          // 호감표시를 생성한다.
+          LikeablePerson likeablePersonToBts = likeablePersonService.like(memberUser3, "bts", 3).getData();
+  
+          // 호감표시를 생성하면 쿨타임이 지정되기 때문에, 그래서 바로 수정이 안된다.
+          // 그래서 강제로 쿨타임이 지난것으로 만든다.
+          // 테스트를 위해서 억지로 값을 넣는다.
+          TestUt.setFieldValue(likeablePersonToBts, "modifyUnlockDate", LocalDateTime.now().minusSeconds(1));
+  
+          // 수정을 하면 쿨타임이 갱신된다.
+          likeablePersonService.modifyAttractive(memberUser3, likeablePersonToBts, 1);
+  
+          // 갱신 되었는지 확인
+          assertThat(
+            likeablePersonToBts.getModifyUnlockDate().isAfter(coolTime)
+          ).isTrue();
+    }
+```
 
+다음 테스트 코드에서 에러가 발생했는데 원래 코드는 minusSeconds(-1)이 되어 있었다
 
-**[특이사항]**
+```java
+TestUt.setFieldValue(likeablePersonToBts, "modifyUnlockDate", LocalDateTime.now().minusSeconds(-1));
+```
 
-구현 과정에서 아쉬웠던 점 / 궁금했던 점을 정리합니다.
+그렇게 되면 -(-1)이 되어 modifyAttractive()에서 canModify()를 진행할 때에 현재 시간보다 더 이후로 기록되어진다.
 
-- 추후 리팩토링 시, 어떤 부분을 추가적으로 진행하고 싶은지에 대해 구체적으로 작성해주시기 바랍니다.
+그래서 통과가 안되었음. 1로 바꿔주고 진행
 
-  **참고: [Refactoring]**
+해결
 
-    - Refactoring 시 주로 다루어야 할 이슈들에 대해 리스팅합니다.
-    - 1차 리팩토링은 기능 개발을 종료한 후, 스스로 코드를 다시 천천히 읽어보면서 진행합니다.
-    - 2차 리팩토링은 피어리뷰를 통해 전달받은 다양한 의견과 피드백을 조율하여 진행합니다.
+![img_5.png](images_of_3Week/img_5.png)
+
+**문제 발생**
+
+---
+
+실행은 잘 되는데 wget으로 접속 시 다음과 같은 에러 발생
+
+![img_6.png](images_of_3Week/img_6.png)
+![img_7.png](images_of_3Week/img_7.png)
