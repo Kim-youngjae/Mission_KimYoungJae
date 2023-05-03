@@ -1,9 +1,11 @@
 package com.ll.gramgram;
 
+import com.ll.gramgram.base.appConfig.EnableQueryLog;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
+@EnableQueryLog
 @SpringBootApplication
 @EnableJpaAuditing // @EntityListeners(AuditingEntityListener.class) 가 작동하도록 허용
 public class GramgramApplication {
