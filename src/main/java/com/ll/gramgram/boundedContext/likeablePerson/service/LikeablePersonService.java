@@ -15,7 +15,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -87,11 +86,10 @@ public class LikeablePersonService {
     }
 
     public RsData canCancel(Member actor, LikeablePerson likeablePerson) {
-        if (likeablePerson == null) return RsData.of("F-1", "이미 삭제되었습니다.");
+        if (likeablePerson == null) return RsData.of("F-1", "이미 취소되었습니다.");
 
         if (!likeablePerson.isModifyUnlocked()) {
-            String strTimeFormat = likeablePerson.getModifyUnlockDate().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-            return RsData.of("F-2", "지금은 호감을 취소할 수 없습니다. 잠시 후 시도해주세요. <br> %s 이후 호감 취소가 가능합니다.".formatted(strTimeFormat));
+            return RsData.of("F-2", "지금은 호감을 취소할 수 없습니다. 잠시 후 시도해주세요. <br> %s 이후 호감 취소가 가능합니다.".formatted(likeablePerson.getUnlockRemainTimeForHumanReadable()));
         }
 
         // 수행자의 인스타계정 번호
@@ -100,9 +98,9 @@ public class LikeablePersonService {
         long fromInstaMemberId = likeablePerson.getFromInstaMember().getId();
 
         if (actorInstaMemberId != fromInstaMemberId)
-            return RsData.of("F-3", "권한이 없습니다.");
+            return RsData.of("F-3", "취소할 권한이 없습니다.");
 
-        return RsData.of("S-1", "삭제가능합니다.");
+        return RsData.of("S-1", "호감 취소가 가능합니다.");
     }
 
     private RsData canLike(Member actor, String username, int attractiveTypeCode) {
@@ -210,8 +208,7 @@ public class LikeablePersonService {
         }
 
         if (!likeablePerson.isModifyUnlocked()) {
-            String strTimeFormat = likeablePerson.getModifyUnlockDate().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
-            return RsData.of("F-2", "지금은 호감사유를 변경할 수 없습니다. 잠시 후 시도해주세요. <br> %s 이후 호감변경이 가능합니다.".formatted(strTimeFormat));
+            return RsData.of("F-2", "지금은 호감사유를 변경할 수 없습니다. 잠시 후 시도해주세요. <br> %s 이후 호감변경이 가능합니다.".formatted(likeablePerson.getUnlockRemainTimeForHumanReadable()));
         }
 
         InstaMember fromInstaMember = actor.getInstaMember();

@@ -192,3 +192,22 @@ TestUt.setFieldValue(likeablePersonToBts, "modifyUnlockDate", LocalDateTime.now(
 
 ![img_6.png](images_of_3Week/img_6.png)
 ![img_7.png](images_of_3Week/img_7.png)
+
+
+
+## [Refactoring]
+
+---
+
+[필수 미션 1번 구현 시 확인하지 못했던 사항들]
+
+- 호감 표시를 한 후 사유변경과 취소를 수정할 수 없도록 하는 부분을 뷰 쪽에서 사유변경과 호감 취소 버튼을 비활성화 
+처리해주는 로직을 확인하지 못했었다.
+- `getModifyUnlockDateRemainStrHuman()` 메서드가 뷰에서 처리되는 부분인 줄 몰랐었다.
+  ➡️ 나는 RsData를 통해 경고 메시와 실패코드를 반환하는 방법을 선택했었다.
+
+이 두 부분을 고려해서 다시 리팩토링 해볼 필요가 있을 것 같다.
+
+- [ ] get메서드로 불러와서
+  likeablePerson.getModifyUnlockDate().format(DateTimeFormatter.ofPattern("HH:mm:ss")); 로 포멧한 부분
+`getModifyUnlockDateRemainStrHuman()` 을 활용해서 수정
