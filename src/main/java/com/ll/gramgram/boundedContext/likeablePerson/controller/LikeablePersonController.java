@@ -48,7 +48,7 @@ public class LikeablePersonController {
             return rq.historyBack(createRsData);
         }
 
-        return rq.redirectWithMsg("usr/likeablePerson/list", createRsData);
+        return rq.redirectWithMsg("/usr/likeablePerson/list", createRsData);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -81,7 +81,7 @@ public class LikeablePersonController {
             return rq.historyBack(deleteRsData); // id가 없어서 삭제가 실패할 경우 뒤로 원복
         }
 
-        return rq.redirectWithMsg("usr/likeablePerson/list", deleteRsData); // 모든 과정이 성공적으로 이루어지면 redirect
+        return rq.redirectWithMsg("/usr/likeablePerson/list", deleteRsData); // 모든 과정이 성공적으로 이루어지면 redirect
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -116,7 +116,7 @@ public class LikeablePersonController {
             return rq.historyBack(rsData);
         }
 
-        return rq.redirectWithMsg("usr/likeablePerson/list", rsData);
+        return rq.redirectWithMsg("/usr/likeablePerson/list", rsData);
     }
 
     @PreAuthorize("isAuthenticated()")

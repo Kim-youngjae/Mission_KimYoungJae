@@ -23,18 +23,18 @@ public class SecurityConfig {
         http
                 .formLogin(
                         formLogin -> formLogin
-                                .loginPage("usr/member/login")
+                                .loginPage("/usr/member/login")
                 )
                 .oauth2Login(
                         oauth2Login -> oauth2Login
-                                .loginPage("usr/member/login")
+                                .loginPage("/usr/member/login")
                                 .tokenEndpoint(t -> t
                                         .accessTokenResponseClient(oAuth2AccessTokenResponseClient)
                                 )
                 )
                 .logout(
                         logout -> logout
-                                .logoutUrl("usr/member/logout")
+                                .logoutUrl("/usr/member/logout")
                 );
 
         return http.build();

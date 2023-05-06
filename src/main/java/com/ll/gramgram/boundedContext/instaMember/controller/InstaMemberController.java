@@ -50,7 +50,7 @@ public class InstaMemberController {
             return rq.historyBack(rsData);
         }
 
-        return rq.redirectWithMsg("usr/likeablePerson/like", "인스타그램 계정이 연결되었습니다.");
+        return rq.redirectWithMsg("/usr/likeablePerson/like", "인스타그램 계정이 연결되었습니다.");
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -72,6 +72,6 @@ public class InstaMemberController {
     public String connectByApi(@Valid ConnectByApiForm connectForm) {
         rq.setSessionAttr("connectByApi__gender", connectForm.getGender());
 
-        return "redirect:oauth2/authorization/instagram";
+        return "redirect:/oauth2/authorization/instagram";
     }
 }
