@@ -29,7 +29,7 @@ public class LikeablePersonController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/like")
     public String showLike() {
-        return "/usr/likeablePerson/like";
+        return "usr/likeablePerson/like";
     }
 
     @AllArgsConstructor
@@ -48,7 +48,7 @@ public class LikeablePersonController {
             return rq.historyBack(createRsData);
         }
 
-        return rq.redirectWithMsg("/usr/likeablePerson/list", createRsData);
+        return rq.redirectWithMsg("usr/likeablePerson/list", createRsData);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -63,7 +63,7 @@ public class LikeablePersonController {
             model.addAttribute("likeablePeople", likeablePeople);
         }
 
-        return "/usr/likeablePerson/list";
+        return "usr/likeablePerson/list";
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -81,7 +81,7 @@ public class LikeablePersonController {
             return rq.historyBack(deleteRsData); // id가 없어서 삭제가 실패할 경우 뒤로 원복
         }
 
-        return rq.redirectWithMsg("/usr/likeablePerson/list", deleteRsData); // 모든 과정이 성공적으로 이루어지면 redirect
+        return rq.redirectWithMsg("usr/likeablePerson/list", deleteRsData); // 모든 과정이 성공적으로 이루어지면 redirect
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -95,7 +95,7 @@ public class LikeablePersonController {
 
         model.addAttribute("likeablePerson", likeablePerson); // 수정한 결과를 모델에 담고
 
-        return "/usr/likeablePerson/modify"; // 해당 뷰 페이지로 모델을 보냄
+        return "usr/likeablePerson/modify"; // 해당 뷰 페이지로 모델을 보냄
     }
 
     @AllArgsConstructor
@@ -116,7 +116,7 @@ public class LikeablePersonController {
             return rq.historyBack(rsData);
         }
 
-        return rq.redirectWithMsg("/usr/likeablePerson/list", rsData);
+        return rq.redirectWithMsg("usr/likeablePerson/list", rsData);
     }
 
     @PreAuthorize("isAuthenticated()")
