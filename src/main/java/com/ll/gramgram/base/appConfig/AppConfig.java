@@ -7,9 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import java.time.LocalDateTime;
 
 @Configuration
-public
-class AppConfig { // yml 설정에서 특정 설정값을 가져다 쓰기 위해서
-
+public class AppConfig {
     @Getter
     private static long likeablePersonFromMax;
 
@@ -30,3 +28,4 @@ class AppConfig { // yml 설정에서 특정 설정값을 가져다 쓰기 위�
         return LocalDateTime.now().plusSeconds(likeablePersonModifyCoolTime);
     }
 }
+
