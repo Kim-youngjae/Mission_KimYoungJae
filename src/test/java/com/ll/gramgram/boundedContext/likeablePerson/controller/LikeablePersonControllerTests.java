@@ -433,4 +433,87 @@ public class LikeablePersonControllerTests {
 
         assertThat(likeablePersonService.findById(3L).get().getAttractiveTypeCode()).isEqualTo(2);
     }
+
+    @Test
+    @DisplayName("내가 받은 호감 목록 (전체 필터)")
+    @WithUserDetails("user3")
+    void t018() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(get("/usr/likeablePerson/toList"))
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("showToList"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_genderDisplayName=남성"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_attractiveTypeDisplayName=능력"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_genderDisplayName=여성"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_attractiveTypeDisplayName=성격"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_genderDisplayName=남성"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_attractiveTypeDisplayName=외모"
+                        """.stripIndent().trim())));
+    }
+
+    @Test
+    @DisplayName("내가 받은 호감 목록 (남자 필터)")
+    @WithUserDetails("user3")
+    void t019() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(get("/usr/likeablePerson/toList"))
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("showToList"))
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_genderDisplayName=남성"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_attractiveTypeDisplayName=능력"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_genderDisplayName=남성"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_attractiveTypeDisplayName=외모"
+                        """.stripIndent().trim())));
+    }
+
+    @Test
+    @DisplayName("내가 받은 호감 목록 (남자 필터)")
+    @WithUserDetails("user3")
+    void t020() throws Exception {
+        // WHEN
+        ResultActions resultActions = mvc
+                .perform(get("/usr/likeablePerson/toList"))
+                .andDo(print());
+
+        // THEN
+        resultActions
+                .andExpect(handler().handlerType(LikeablePersonController.class))
+                .andExpect(handler().methodName("showToList"))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_genderDisplayName=여성"
+                        """.stripIndent().trim())))
+                .andExpect(content().string(containsString("""
+                        data-test="toInstaMember_attractiveTypeDisplayName=성격"
+                        """.stripIndent().trim())));
+    }
 }

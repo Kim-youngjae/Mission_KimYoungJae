@@ -63,6 +63,11 @@ public class NotProd {
                 LikeablePerson likeablePersonToInstaUser100 = likeablePersonService.like(memberUser3, "insta_user100", 2).getData();
                 Ut.reflection.setFieldValue(likeablePersonToInstaUser100, "modifyUnlockDate", LocalDateTime.now().minusSeconds(1));
 
+                // user3을 좋아하는 데이터
+                likeablePersonService.like(memberUser4, "insta_user3", 1);
+                likeablePersonService.like(memberUser5, "insta_user3", 2);
+                likeablePersonService.like(memberUser2, "insta_user3", 3);
+
                 LikeablePerson likeablePersonToInstaUserAbcd = likeablePersonService.like(memberUser3, "insta_user_abcd", 2).getData();
             }
         };
