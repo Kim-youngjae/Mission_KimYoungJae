@@ -39,6 +39,7 @@ public class InstaMemberService {
             return RsData.of("F-1", "해당 인스타그램 아이디는 이미 다른 사용자와 연결되었습니다.");
         }
 
+        //
         RsData<InstaMember> instaMemberRsData = findByUsernameOrCreate(username, gender);
 
         memberService.updateInstaMember(member, instaMemberRsData.getData());
@@ -63,10 +64,9 @@ public class InstaMemberService {
     public RsData<InstaMember> findByUsernameOrCreate(String username) {
         Optional<InstaMember> opInstaMember = findByUsername(username);
 
-        if (opInstaMember.isPresent()) return RsData.of("S-2", "인스타계정이 등록되었습니다.", opInstaMember.get());
-
-        // 아직 성별을 알 수 없으니, 언노운의 의미로 U 넣음
-        return create(username, "U");
+        return opInstaMember
+                .map(instaMember -> RsData.of("S-2", "인스타계정이 등록되었습니다.", instaMember))
+                .orElseGet(() -> create(username, "U"));
     }
 
     @Transactional
@@ -76,7 +76,7 @@ public class InstaMemberService {
         // 찾았다면
         if (opInstaMember.isPresent()) {
             InstaMember instaMember = opInstaMember.get();
-            instaMember.setGender(gender); // 성별세팅
+            instaMember.updateGender(gender); // 성별세팅
             instaMemberRepository.save(instaMember); // 저장
 
             // 기존 인스타회원이랑 연결

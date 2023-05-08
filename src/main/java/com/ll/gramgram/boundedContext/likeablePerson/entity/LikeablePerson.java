@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 @ToString(callSuper = true)
 public class LikeablePerson extends BaseEntity {
-    private LocalDateTime modifyUnlockDate; // 수정을 할 수 있는 시간을 갱신할 필드
+    private LocalDateTime modifyUnlockDate;
 
     @ManyToOne
     @ToString.Exclude
@@ -35,14 +35,13 @@ public class LikeablePerson extends BaseEntity {
     private int attractiveTypeCode; // 매력포인트(1=외모, 2=성격, 3=능력)
 
     public boolean isModifyUnlocked() {
-        return modifyUnlockDate.isBefore(LocalDateTime.now()); // 수정할 수 있는 시간이 현재 시간보다 더 이전인지 -> 그럼 수정가능
+        return modifyUnlockDate.isBefore(LocalDateTime.now());
     }
 
     // 초 단위에서 올림 해주세요.
-    public String getUnlockRemainTimeForHumanReadable() { // 뷰에서 수정이 가능한 시간을 띄워줌
+    public String getModifyUnlockDateRemainStrHuman() {
         return Ut.time.diffFormat1Human(LocalDateTime.now(), modifyUnlockDate);
     }
-
 
     public RsData updateAttractionTypeCode(int attractiveTypeCode) {
         if (this.attractiveTypeCode == attractiveTypeCode) {
