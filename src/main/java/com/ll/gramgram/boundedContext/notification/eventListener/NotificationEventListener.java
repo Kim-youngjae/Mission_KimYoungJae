@@ -19,15 +19,15 @@ public class NotificationEventListener {
 
     @EventListener
     public void listen(EventAfterLike event) {
-        LikeablePerson likeablePerson = event.getLikeablePerson();
-
-        notificationService.makeLike(likeablePerson);
+        // 누군가가 호감 표시를 했을 때
+        LikeablePerson likeablePerson = event.getLikeablePerson(); // 좋아요가 발생하면 publisher 로 이벤트 발생 및 likeablePerson 을 매개변수로 넘겨줌
+        notificationService.makeLike(likeablePerson); // 가져온 likeablePerson 을 notificationService 에서 처리
     }
 
     @EventListener
     public void listen(EventAfterModifyAttractiveType event) {
+        // 누군가의 호감 사유가 변경 되었을 때
         LikeablePerson likeablePerson = event.getLikeablePerson();
-
         notificationService.makeModifyAttractive(likeablePerson, event.getOldAttractiveTypeCode());
     }
 }
